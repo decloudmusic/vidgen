@@ -11,20 +11,20 @@ timecode() { #1: frame 2: fps, numfmt
 }
 
 # MAIN ------------------------------------------------------------------------
-[ "$#" = 4 ] || { echo "Usage: $0 width height fps length"; exit 1; }
-w="$1"
-h="$2"
-fps="$3"
-length="$4"
-cfgfmt="${w}x${h}p${3}"
+[ "$#" = 2 ] || { echo "Usage: $0 format length"; exit 1; }
+w="${1%%x*}"
+h="$(echo "$1"| sed 's/[0-9]*x\([0-9]*\)p[0-9]*/\1/')"
+fps="${1##*p}"
+length="$2"
+format="${w}x${h}p${fps}"
 numfmt="%0$(echo "length($length/$fps)"|bc)d.%0$(echo "length($fps)"|bc)d"
-makefile="Makefile.$cfgfmt"
+makefile="Makefile.$format"
 
 :>"$makefile"
-to_make "output.mp4: "
+to_make "${format}.mp4: "
 for i in $(seq 0 "$length"); do
-    to_make "${cfgfmt}_$(timecode "$i" "$fps").png "
+    to_make "${format}_$(timecode "$i" "$fps").png "
 done
 to_make "\n"
-to_make "\tffmpeg -framerate $fps -y -pattern_type glob -i \"${cfgfmt}_*.png\" ${format}.mp4\n"
+to_make "\tffmpeg -framerate $fps -y -pattern_type glob -i \"${format}_*.png\" ${format}.mp4\n"
 
