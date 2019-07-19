@@ -49,7 +49,12 @@ makefile="$cache/$format.mk"
 
 mkdir -p "$cache"
 
+# Makefile header
 :>"$makefile"
+to_make ".POSIX:\n"
+to_make "\n"
+
+# Reduce images to mp4
 to_make "$(relpath . "$cache/${format}.mp4"): "
 for i in $(seq 0 "$(( $length - 1 ))"); do
     to_make "$(relpath . "$cache/${format}_$(timecode "$i" "$fps").png") "
