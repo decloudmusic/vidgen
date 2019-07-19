@@ -80,7 +80,7 @@ to_make "\n"
 #map parameters to image
 to_make ".SUFFIXES: .f .png\n"
 to_make ".f.png:\n"
-to_make "\t$mapper $format '\$<'\n"
+to_make "\t$mapper $format <'\$<' >'\$@'\n"
 
 shift 3
 for x in "$@"; do

@@ -22,7 +22,7 @@ After `git clone`, run `sh framework.sh` with as arguments:
 This will set up a makefile that can be called from the same directory
 that `framework.sh` was called from with (probably)
 `make -f ${cache}/${format}.mk`. The given mapper will be called as
-`${mapper} ${format} ${framefile}` for each frame.
+`${mapper} ${format} <${framefile} >${image}` for each frame.
 
 Formats
 -------
@@ -31,5 +31,5 @@ Formats
   - `frame`: the 'timecode'. Seconds, with as many leading zeroes
     as needed, and the frame in that second, both starting from
     zero. Encoded as `${second}.${frame}`
-  - framefile: `${audiofile}: ${value}\n` for every input audio.
-
+  - framefile: a file or input stream with `${audiofile}: ${value}\n`
+    for every input audio.
