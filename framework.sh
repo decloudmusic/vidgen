@@ -27,12 +27,8 @@ timecode() { #1: frame 2: fps, numfmt
     printf "$numfmt" "$(echo "$1/$2"|bc)" "$(echo "$1%$2"|bc)"
 }
 
-wav_get_length() { #1: wavfile
-    python -c '
-import wave, contextlib, sys
-with contextlib.closing(wave.open(sys.argv[1],"r")) as f:
-    print(f.getnframes() / float(f.getframerate()))
-    ' "$1"
+wav_length() { #1: path
+    python ./wav_length.py "$@"
 }
 
 # MAIN ------------------------------------------------------------------------
@@ -43,7 +39,7 @@ fps="${1##*p}"
 cache="$2"
 audiofile="$(relpath . "$3")"
 format="${w}x${h}p${fps}"
-length="$(echo "$fps * $(wav_get_length "$audiofile") + 1"|bc|sed 's/\..*//')"
+length="$(echo "$fps * $(wav_length "$audiofile") + 1" | bc | sed 's/\..*//')"
 numfmt="%0$(echo "length($length/$fps)"|bc)d.%0$(echo "length($fps)"|bc)d"
 makefile="$cache/$format.mk"
 
