@@ -32,12 +32,13 @@ wav_length() { #1: path
 }
 
 # MAIN ------------------------------------------------------------------------
-[ "$#" -lt 3 ] && { echo "Usage: $0 format cache audio"; exit 1; }
+[ "$#" -lt 4 ] && { echo "Usage: $0 format mapper cache audio"; exit 1; }
 w="${1%%x*}"
 h="$(echo "$1"| sed 's/[0-9]*x\([0-9]*\)p[0-9]*/\1/')"
 fps="${1##*p}"
-cache="$2"
-audiofile="$(relpath . "$3")"
+cache="$3"
+mapper="$([ -f "$2" ] && relpath . "./$2" || echo "$2")"
+audiofile="$(relpath . "$4")"
 format="${w}x${h}p${fps}"
 length="$(echo "$fps * $(wav_length "$audiofile") + 1" | bc | sed 's/\..*//')"
 numfmt="%0$(echo "length($length/$fps)"|bc)d.%0$(echo "length($fps)"|bc)d"
@@ -48,6 +49,7 @@ mkdir -p "$cache"
 # Makefile header
 :>"$makefile"
 to_make ".POSIX:\n"
+to_make ".SUFFIXES:\n"
 to_make "\n"
 
 # Reduce images to mp4
@@ -62,3 +64,7 @@ to_make "\t%s%s%s\n" \
     "-i \"$audiofile\" -c:a aac '$cache/${format}.mp4'"
 to_make "\n"
 
+#map parameters to image
+to_make ".SUFFIXES: .f .png\n"
+to_make ".f.png:\n"
+to_make "\t$mapper $format '\$<'\n"
