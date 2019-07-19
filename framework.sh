@@ -31,8 +31,21 @@ wav_length() { #1: path
     python ./wav_length.py "$@"
 }
 
+wav_to_frame() { #1: fps, 2: numfmt, 3: path
+    python ./wav_to_frame.py "$@"
+}
+
+lineinfile() { #1: path, 2: regexp, 3: line
+    [ -e "$1" ] && grep -qF "$3" "$1" && return 0
+    touch "$1"
+    ex -sc"/$2/d|a|$3" -cx "$1" </dev/null
+    grep -qF "$3" "$1" && return 1
+    echo "$3" >>"$1"
+    return 1
+}
+
 # MAIN ------------------------------------------------------------------------
-[ "$#" -lt 4 ] && { echo "Usage: $0 format mapper cache audio"; exit 1; }
+[ "$#" -lt 4 ] && { echo "Usage: $0 format mapper cache audio..."; exit 1; }
 w="${1%%x*}"
 h="$(echo "$1"| sed 's/[0-9]*x\([0-9]*\)p[0-9]*/\1/')"
 fps="${1##*p}"
@@ -68,3 +81,12 @@ to_make "\n"
 to_make ".SUFFIXES: .f .png\n"
 to_make ".f.png:\n"
 to_make "\t$mapper $format '\$<'\n"
+
+shift 3
+for x in "$@"; do
+    wav_to_frame "$format" "$numfmt" "$x" >"$cache/${x%.wav}.p${fps}.frames"
+    while IFS= read -r line; do
+        lineinfile "$cache/${format}_${line%: *}.f" "^${x%.wav}: " \
+            "${x%.wav}: ${line#*: }" || true
+    done <"$cache/${x%.wav}.p${fps}.frames"
+done
