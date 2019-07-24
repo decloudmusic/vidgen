@@ -28,11 +28,11 @@ timecode() { #1: frame 2: fps, numfmt
 }
 
 wav_length() { #1: path
-    python ./wav_length.py "$@"
+    python "${VIDGEN_PATH:+$VIDGEN_PATH/}wav_length.py" "$@"
 }
 
 wav_to_frame() { #1: fps, 2: numfmt, 3: path
-    python ./wav_to_frame.py "$@"
+    python "${VIDGEN_PATH:+$VIDGEN_PATH/}wav_to_frame.py" "$@"
 }
 
 lineinfile() { #1: path, 2: regexp, 3: line
@@ -46,6 +46,7 @@ lineinfile() { #1: path, 2: regexp, 3: line
 
 # MAIN ------------------------------------------------------------------------
 [ "$#" -lt 4 ] && { echo "Usage: $0 format mapper cache audio..."; exit 1; }
+VIDGEN_PATH="${VIDGEN_PATH:-$(dirname "$0")}"
 w="${1%%x*}"
 h="$(echo "$1"| sed 's/[0-9]*x\([0-9]*\)p[0-9]*/\1/')"
 fps="${1##*p}"
