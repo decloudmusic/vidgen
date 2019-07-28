@@ -17,6 +17,6 @@ with contextlib.closing(wave.open(path, 'rb')) as w:
         normalized = [abs(struct.unpack('<' + '_Bh_i'[len(chunk)], chunk)[0]
             / 2.0 ** (8 * len(chunk) - 1)) for chunk in padded]
         value = max(normalized)
-        print(numfmt % (i // fps, i % fps) + ': ' + str((value)))
+        print(numfmt % (i // fps, i % fps) + ': ' + ('%.16f' % value))
     i += 1
     print(numfmt % (i // fps, i % fps) + ': ' + str(0.0))
