@@ -19,12 +19,7 @@ wav_to_frame() { #1: fps, 2: numfmt, 3: path
 }
 
 lineinfile() { #1: path, 2: regexp, 3: line
-    [ -e "$1" ] && grep -qF "$3" "$1" && return 0
-    touch "$1"
-    ex -sc"/$2/d|a|$3" -cx "$1" </dev/null
-    grep -qF "$3" "$1" && return 1
-    echo "$3" >>"$1"
-    return 1
+    ex -sc"g/$3/q" -c"/$2/d" -c"i|$3" -cx "$1"
 }
 
 # MAIN ------------------------------------------------------------------------
@@ -68,7 +63,8 @@ to_make "\t$mapper $format <'\$<' >'\$@'\n"
 
 shift 4
 for x in "$@"; do
-    wav_to_frame "$format" "$numfmt" "$x" >"$cache/${x%.wav}.p${fps}.frames"
+    [ "$x" -ot "$cache/${x%.wav}.p$fps.frames" ] || \
+        wav_to_frame "$format" "$numfmt" "$x" >"$cache/${x%.wav}.p$fps.frames"
     while IFS= read -r line; do
         lineinfile "$cache/${format}_${line%: *}.f" "^${x%.wav}: " \
             "${x%.wav}: ${line#*: }" || true
