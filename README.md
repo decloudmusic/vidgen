@@ -16,8 +16,8 @@ After `git clone`, run `sh framework.sh` with as arguments:
  3. cache: The directory where all data that can be regenerated is
     kept. Can be deleted without loss of information.
  4. audio...: `.wav` files that will be chopped up to generate the
-    framefiles. The first one will be used as the audio track for
-    the video, and the length will be calculated from it.
+    framefiles. The first one will only be used as the audio track
+    for the video, and the length will be calculated from it.
 
 This will set up a makefile that can be called from the same directory
 that `framework.sh` was called from with (probably)

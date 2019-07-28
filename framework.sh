@@ -83,7 +83,7 @@ to_make ".SUFFIXES: .f .png\n"
 to_make ".f.png:\n"
 to_make "\t$mapper $format <'\$<' >'\$@'\n"
 
-shift 3
+shift 4
 for x in "$@"; do
     wav_to_frame "$format" "$numfmt" "$x" >"$cache/${x%.wav}.p${fps}.frames"
     while IFS= read -r line; do
